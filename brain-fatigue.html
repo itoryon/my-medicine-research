@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Переутомление головного мозга — Исследование</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-hover: #222633;
+    --border: #2a2e3a;
+    --text: #e4e6ed;
+    --text-muted: #8b8fa3;
+    --accent: #6c8cff;
+    --accent-glow: rgba(108,140,255,.15);
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --purple: #a78bfa;
+    --cyan: #22d3ee;
+    --orange: #fb923c;
+    --radius: 12px;
+    --transition: .3s cubic-bezier(.4,0,.2,1);
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* ===== NAVIGATION ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(15,17,23,.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    transition: var(--transition);
+  }
+
+  nav .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  nav .logo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  nav .logo .emoji { font-size: 1.3rem; }
+
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+
+  .nav-links a {
+    display: block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .nav-links a.active { color: var(--accent); }
+
+  /* mobile menu */
+  .menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 20px 60px;
+  }
+
+  /* ===== SECTIONS (tabs) ===== */
+  .section {
+    display: none;
+    animation: fadeIn .4s ease;
+  }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 40px 0 48px;
+  }
+
+  .hero .brain-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+  }
+
+  .hero h1 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: var(--transition);
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  .card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card p { color: var(--text-muted); font-size: .95rem; }
+
+  /* ===== SECTION HEADER ===== */
+  .section-header {
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header .section-icon {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .section-header p {
+    color: var(--text-muted);
+    font-size: .95rem;
+  }
+
+  /* ===== CONTENT BLOCKS ===== */
+  .block {
+    margin-bottom: 32px;
+  }
+
+  .block h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .block h3 .icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .block p {
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    font-size: .95rem;
+  }
+
+  .block p:last-child { margin-bottom: 0; }
+
+  /* highlight callout */
+  .callout {
+    background: linear-gradient(135deg, rgba(108,140,255,.08), rgba(167,139,250,.08));
+    border: 1px solid rgba(108,140,255,.2);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .callout::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+    background: var(--accent);
+  }
+
+  .callout p { color: var(--text); font-size: .95rem; margin: 0; }
+
+  .callout.green {
+    background: linear-gradient(135deg, rgba(74,222,128,.08), rgba(34,211,238,.08));
+    border-color: rgba(74,222,128,.2);
+  }
+  .callout.green::before { background: var(--green); }
+
+  .callout.red {
+    background: linear-gradient(135deg, rgba(248,113,113,.08), rgba(251,146,60,.08));
+    border-color: rgba(248,113,113,.2);
+  }
+  .callout.red::before { background: var(--red); }
+
+  .callout.yellow {
+    background: linear-gradient(135deg, rgba(251,191,36,.08), rgba(248,113,113,.08));
+    border-color: rgba(251,191,36,.2);
+  }
+  .callout.yellow::before { background: var(--yellow); }
+
+  /* ===== NEUROTRANSMITTER GRID ===== */
+  .nt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+
+  .nt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    transition: var(--transition);
+  }
+
+  .nt-card:hover { border-color: var(--accent); }
+
+  .nt-card .nt-name {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nt-card .nt-name .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .nt-card .nt-desc { color: var(--text-muted); font-size: .88rem; }
+
+  .nt-card .source {
+    margin-top: 10px;
+    font-size: .78rem;
+    color: var(--text-muted);
+    opacity: .7;
+    font-style: italic;
+  }
+
+  /* ===== TABLE ===== */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+  }
+
+  thead th {
+    background: var(--surface-hover);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* ===== CHART (CSS bar chart) ===== */
+  .chart {
+    margin: 20px 0;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .chart-title {
+    font-weight: 700;
+    font-size: .95rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 160px; }
+
+  .chart-bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chart-bar {
+    width: 100%;
+    max-width: 48px;
+    border-radius: 6px 6px 0 0;
+    transition: var(--transition);
+    position: relative;
+    min-height: 4px;
+  }
+
+  .chart-bar:hover { opacity: .85; }
+
+  .chart-bar .value {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .chart-label {
+    font-size: .72rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .chart-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 160px;
+    padding-right: 8px;
+    font-size: .72rem;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  .chart-area {
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    border-left: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0 0 0 8px;
+  }
+
+  /* ===== RESEARCH ITEM ===== */
+  .research-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    transition: var(--transition);
+  }
+
+  .research-item:hover { border-color: var(--accent); }
+
+  .research-item .ri-title {
+    font-weight: 700;
+    font-size: .98rem;
+    margin-bottom: 8px;
+  }
+
+  .research-item .ri-finding {
+    color: var(--text-muted);
+    font-size: .9rem;
+    margin-bottom: 10px;
+  }
+
+  .research-item .ri-source {
+    font-size: .78rem;
+    color: var(--accent);
+    opacity: .8;
+    font-style: italic;
+  }
+
+  /* ===== CYCLE DIAGRAM ===== */
+  .cycle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .cycle-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: .82rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .cycle-arrow {
+    color: var(--accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  /* ===== STAR RATING ===== */
+  .stars { letter-spacing: 2px; }
+
+  /* ===== QUOTE ===== */
+  .quote {
+    border-left: 4px solid var(--accent);
+    padding: 16px 24px;
+    margin: 24px 0;
+    background: var(--surface);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-style: italic;
+    color: var(--text);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .quote cite {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: .82rem;
+    color: var(--text-muted);
+  }
+
+  /* ===== KEY POINTS ===== */
+  .key-points {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+
+  .key-point {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: var(--transition);
+  }
+
+  .key-point:hover { border-color: var(--accent); }
+
+  .key-point .kp-num {
+    background: var(--accent);
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: .8rem;
+    flex-shrink: 0;
+  }
+
+  .key-point .kp-text { font-size: .9rem; color: var(--text-muted); }
+  .key-point .kp-text strong { color: var(--text); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: .82rem;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 56px; left: 0; right: 0;
+      background: rgba(15,17,23,.97);
+      backdrop-filter: blur(16px);
+      flex-direction: column;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      max-height: calc(100vh - 56px);
+      overflow-y: auto;
+    }
+
+    .nav-links.open { display: flex; }
+
+    .nav-links a {
+      padding: 10px 14px;
+      font-size: .92rem;
+    }
+
+    .menu-btn { display: block; }
+
+    main { padding: 72px 16px 40px; }
+
+    .card { padding: 18px; }
+
+    .nt-grid { grid-template-columns: 1fr; }
+
+    .cycle { flex-direction: column; }
+    .cycle-arrow { transform: rotate(90deg); }
+
+    .chart-bars { height: 130px; }
+    .chart-y-axis { height: 130px; }
+
+    .key-points { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 400px) {
+    .hero h1 { font-size: 1.4rem; }
+    .hero .brain-icon { font-size: 3rem; }
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+    nav { display: none; }
+    main { padding-top: 20px; }
+    .section { display: block !important; page-break-inside: avoid; }
+    body { background: #fff; color: #000; }
+    .card, .callout, .research-item, .nt-card { border-color: #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#" onclick="showSection('intro'); return false;">
+      <span class="emoji">🧠</span> Переутомление мозга
+    </a>
+    <button class="menu-btn" onclick="toggleMenu()" aria-label="Меню">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a class="active" onclick="showSection('intro')">Главная</a></li>
+      <li><a onclick="showSection('physiology')">Физиология</a></li>
+      <li><a onclick="showSection('memory')">Память и сон</a></li>
+      <li><a onclick="showSection('stress')">Стресс</a></li>
+      <li><a onclick="showSection('burnout')">Выгорание</a></li>
+      <li><a onclick="showSection('productivity')">Продуктивность</a></li>
+      <li><a onclick="showSection('rest')">Отдых</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============================== -->
+<!-- SECTION: INTRO                -->
+<!-- ============================== -->
+<div class="section active" id="intro">
+  <div class="hero">
+    <div class="brain-icon">🧠</div>
+    <h1>Переутомление головного мозга</h1>
+    <p>Почему нельзя постоянно учиться — и что происходит, когда не остаётся времени на отдых и хобби</p>
+  </div>
+
+  <div class="callout">
+    <p><strong>Главный вывод:</strong> Мозг — не машина. Он не может работать на максимуму непрерывно. Наука однозначна: <strong>отдых — это часть обучения</strong>, а не его противоположность.</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📋</span> Ключевые выводы исследования</h3>
+    <div class="key-points">
+      <div class="key-point">
+        <div class="kp-num">1</div>
+        <div class="kp-text"><strong>Умственная усталость — биологический факт.</strong> Истощение нейромедиаторов, накопление аденозина, снижение активности префронтальной коры. Это не «лень» — это химия мозга.</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num">2</div>
+        <div class="kp-text"><strong>Мозг учится во время отдыха.</strong> Консолидация памяти происходит во сне и в состоянии покоя. Без этого информация не переходит в долговременную память.</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num">3</div>
+        <div class="kp-text"><strong>Хронический стресс разрушает мозг.</strong> Кортизол уменьшает объём гиппокампа, подавляет образование новых нейронов и ослабляет способность к обучению.</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num">4</div>
+        <div class="kp-text"><strong>Выгорание — задокументированный синдром.</strong> Три компонента: эмоциональное истощение, цинизм, снижение достижений. Затрагивает 30-40% студентов.</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num">5</div>
+        <div class="kp-text"><strong>Больше часов учёбы ≠ больше знаний.</strong> После 6-8 часов интенсивной работы эффективность резко падает. Распределённое обучение эффективнее в 2-3 раза.</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num">6</div>
+        <div class="kp-text"><strong>Отдых и хобби — необходимость.</strong> Физическая активность выращивает новые нейроны. Природа восстанавливает внимание. Хобби восстанавливает мотивацию.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📚</span> Ключевые источники</h3>
+    <div class="nt-grid">
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--accent)"></span>Walker M.P. (2017)</div>
+        <div class="nt-desc"><em>Why We Sleep</em> — фундаментальная работа о роли сна в обучении</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--red)"></span>Sapolsky R.M. (2004)</div>
+        <div class="nt-desc"><em>Why Zebras Don't Get Ulcers</em> — физиология стресса</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--green)"></span>Ratey J.J. (2008)</div>
+        <div class="nt-desc"><em>Spark</em> — влияние физической активности на мозг</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--purple)"></span>Csikszentmihalyi M. (1990)</div>
+        <div class="nt-desc"><em>Flow</em> — психология оптимального опыта</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--cyan)"></span>Deci & Ryan (2000)</div>
+        <div class="nt-desc">Self-Determination Theory — теория самодетерминации</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--orange)"></span>Maslach & Leiter (2016)</div>
+        <div class="nt-desc">Исследования выгорания (burnout)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    Попытка учиться без перерывов, без сна, без хобби — это не путь к знаниям. Это путь к выгоранию, истощению и снижению способности учиться.
+    <cite>— Вывод на основе 60+ научных исследований</cite>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SECTION: PHYSIOLOGY           -->
+<!-- ============================== -->
+<div class="section" id="physiology">
+  <div class="section-header">
+    <span class="section-icon">⚡</span>
+    <h2>Физиология мозга и усталость</h2>
+    <p>Что происходит внутри черепа, когда мозг перегружен</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🔋</span> Энергетический бюджет мозга</h3>
+    <p>Мозг — самый «дорогой» орган в теле человека:</p>
+    <ul style="color:var(--text-muted); margin: 8px 0 16px 20px; font-size:.95rem; line-height:2;">
+      <li>Составляет <strong style="color:var(--text)">~2% массы тела</strong></li>
+      <li>Потребляет <strong style="color:var(--text)">~20% всей энергии</strong> (глюкозы и кислорода)</li>
+      <li>При активной умственной работе — до <strong style="color:var(--text)">25-30%</strong></li>
+    </ul>
+    <div class="callout">
+      <p><strong>Raichle M.E., Mintun M.A.</strong> (2006). "Brain work and brain imaging." <em>Annual Review of Neuroscience</em>, 29, 449-476. — Исследование базового энергопотребления мозга и концепции default mode network.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🧪</span> Нейромедиаторы и их истощение</h3>
+    <p>При интенсивной умственной работе расходуются ключевые нейромедиаторы:</p>
+
+    <div class="nt-grid">
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:#f59e0b"></span>Дофамин</div>
+        <div class="nt-desc">Мотивация, внимание, чувство вознаграждения. Истощение → пропадает желание что-либо делать.</div>
+        <div class="source">Cools R. (2008). <em>The Neuroscientist</em>, 14(4), 381-395.</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:#ef4444"></span>Норадреналин</div>
+        <div class="nt-desc">Бдительность и концентрация. Истощение → рассеянность, невозможность сфокусироваться.</div>
+        <div class="source">Aston-Jones G., Cohen J.D. (2005). <em>Annual Review of Neuroscience</em>, 28, 403-450.</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:#22d3ee"></span>Ацетилхолин</div>
+        <div class="nt-desc">Обучение и память. Дефицит → ухудшение запоминания, «туман в голове».</div>
+        <div class="source">Hasselmo M.E. (2006). <em>Current Opinion in Neurobiology</em>, 16(6), 710-715.</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:#a78bfa"></span>Аденозин</div>
+        <div class="nt-desc">Молекула усталости. Накапливается во время бодрствования. Кофеин блокирует его рецепторы, но не устраняет причину.</div>
+        <div class="source">Porkka-Heiskanen T. et al. (1997). <em>Science</em>, 276(5316), 1265-1268.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🎯</span> Префронтальная кора — первая жертва</h3>
+    <p>Префронтальная кора (ПФК) отвечает за концентрацию, планирование, принятие решений и самоконтроль. При длительной нагрузке:</p>
+    <ol style="color:var(--text-muted); margin: 8px 0 16px 20px; font-size:.95rem; line-height:2;">
+      <li>Кровоснабжение ПФК <strong style="color:var(--red)">снижается</strong></li>
+      <li>Активность ПФК <strong style="color:var(--red)">падает</strong> — контроль переходит к примитивным зонам (миндалевидное тело)</li>
+      <li>Результат: импульсивность, раздражительность, неспособность сосредоточиться</li>
+    </ol>
+    <div class="callout red">
+      <p><strong>Arnsten A.F.T.</strong> (2009). "Stress signalling pathways that impair prefrontal cortex structure and function." <em>Nature Reviews Neuroscience</em>, 10(6), 410-422.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📊</span> Признаки умственного переутомления</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Симптом</th><th>Что происходит в мозге</th></tr></thead>
+        <tbody>
+          <tr><td>Трудно сосредоточиться</td><td>Снижение активности ПФК, нехватка норадреналина</td></tr>
+          <tr><td>Всё раздражает</td><td>Передача контроля миндалевидному телу</td></tr>
+          <tr><td>Нет сил на любимые дела</td><td>Истощение дофамина</td></tr>
+          <tr><td>«Туман в голове»</td><td>Накопление аденозина, дефицит ацетилхолина</td></tr>
+          <tr><td>Забываешь только что прочитанное</td><td>Нарушение работы гиппокампа</td></tr>
+          <tr><td>Хочется только лёжа смотреть в стену</td><td>Мозг переключается в энергосберегающий режим</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Резюме:</strong> Умственная усталость — это не «лень» и не «слабость характера». Это объективный биологический процесс: истощение нейромедиаторов, накопление продуктов метаболизма, снижение кровоснабжения ключевых зон.</p>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SECTION: MEMORY               -->
+<!-- ============================== -->
+<div class="section" id="memory">
+  <div class="section-header">
+    <span class="section-icon">💤</span>
+    <h2>Память, сон и консолидация</h2>
+    <p>Почему учёба без сна бессмысленна</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🔄</span> Три этапа запоминания</h3>
+    <div class="nt-grid">
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--accent)"></span>1. Кодирование</div>
+        <div class="nt-desc">Получение новой информации. Происходит <strong>во время учёбы</strong>.</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--purple)"></span>2. Консолидация</div>
+        <div class="nt-desc">Перевод в долговременную память. Происходит <strong>во время отдыха и сна</strong>.</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:var(--green)"></span>3. Извлечение</div>
+        <div class="nt-desc">Доступ к сохранённой информации. При повторении или необходимости.</div>
+      </div>
+    </div>
+    <div class="callout yellow" style="margin-top:16px">
+      <p>⚠️ <strong>Критический момент:</strong> этап консолидации нельзя пропустить. Без него информация просто не сохраняется.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🌙</span> Что происходит во сне</h3>
+    <div class="nt-grid">
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:#6366f1"></span>Медленный сон (NREM)</div>
+        <div class="nt-desc">Гиппокамп «проигрывает» полученную за день информацию и передаёт в кору для долгосрочного хранения. Удаляются слабые связи.</div>
+      </div>
+      <div class="nt-card">
+        <div class="nt-name"><span class="dot" style="background:#ec4899"></span>Быстрый сон (REM)</div>
+        <div class="nt-desc">Устанавливаются ассоциативные связи между новыми и старыми знаниями. Обработка эмоций. Креативное решение проблем (инсайты).</div>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong>Walker M.P.</strong> (2017). <em>Why We Sleep</em>. Simon & Schuster. — Фундаментальная книга о роли сна, написанная директором Центра изучения сна в UC Berkeley.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">⚠️</span> Что бывает при недосыпе</h3>
+
+    <div class="research-item">
+      <div class="ri-title">Williamson & Feyer (2000) — Сравнение с опьянением</div>
+      <div class="ri-finding">Бодрствование в течение <strong>17-19 часов</strong> снижает когнитивные способности эквивалентно содержанию <strong>0.05-0.10% алкоголя в крови</strong>. После 24 часов без сна — эффект сравним с алкогольным опьянением.</div>
+      <div class="ri-source"><em>Occupational and Environmental Medicine</em>, 57(10), 649-655.</div>
+    </div>
+
+    <div class="research-item">
+      <div class="ri-title">Yoo et al. (2007) — Потеря памяти на 40%</div>
+      <div class="ri-finding">После <strong>35 часов без сна</strong> способность к запоминанию снизилась на <strong>40%</strong>. Гиппокамп показывал значительно меньшую активность при попытке кодировать новую информацию.</div>
+      <div class="ri-source"><em>Nature Neuroscience</em>, 10(3), 385-392.</div>
+    </div>
+
+    <div class="research-item">
+      <div class="ri-title">Mander et al. (2011) — Дневной сон улучшает обучение</div>
+      <div class="ri-finding">Участники, которые спали <strong>90 минут днём</strong>, показали улучшение запоминания на <strong>20%</strong> по сравнению с теми, кто бодрствовал.</div>
+      <div class="ri-source"><em>Current Biology</em>, 21(5), R183-R184.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🧩</span> Default Mode Network — мозг «на паузе»</h3>
+    <p>Когда мы НЕ заняты конкретной задачей, активируется сеть пассивного режима мозга (DMN):</p>
+    <ul style="color:var(--text-muted); margin: 8px 0 16px 20px; font-size:.95rem; line-height:2;">
+      <li>Мозг «переваривает» информацию</li>
+      <li>Устанавливает связи между разными областями знаний</li>
+      <li>Формирует целостную картину из фрагментов</li>
+    </ul>
+    <div class="callout red">
+      <p>Если не давать мозгу времени на этот режим (постоянно загружая информацией), качество усвоения <strong>резко падает</strong>.</p>
+    </div>
+    <p style="font-size:.88rem;color:var(--text-muted);font-style:italic;">Raichle M.E. (2001). <em>PNAS</em>, 98(2), 676-682. | Immordino-Yang M.H., Singh V. (2013). <em>Educational Psychologist</em>, 48(3), 153-166.</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">✅</span> Мифы и реальность</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>❌ Миф</th><th>✅ Реальность</th></tr></thead>
+        <tbody>
+          <tr><td>«Больше часов учёбы = больше знаний»</td><td>Без сна и отдыха знания не консолидируются</td></tr>
+          <tr><td>«Можно выучить всё в последнюю ночь»</td><td>Информация не перейдёт в долговременную память</td></tr>
+          <tr><td>«Отдых — это потерянное время»</td><td>Отдых — это часть процесса обучения</td></tr>
+          <tr><td>«Спящий человек ничего не делает»</td><td>Во сне мозг работает интенсивнее, чем при пассивном бодрствовании</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Резюме:</strong> Мозг учится не когда вы учитесь, а когда вы отдыхаете. Сон — это не перерыв в обучении, а его неотъемлемая часть. Каждый час сна, «украденный» ради учёбы, кратно снижает эффективность всех предыдущих часов занятий.</p>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SECTION: STRESS               -->
+<!-- ============================== -->
+<div class="section" id="stress">
+  <div class="section-header">
+    <span class="section-icon">🔥</span>
+    <h2>Стресс, кортизол и гиппокамп</h2>
+    <p>Как давление убивает способность учиться</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">⚖️</span> Острый vs хронический стресс</h3>
+    <div class="nt-grid">
+      <div class="nt-card" style="border-color:rgba(74,222,128,.3)">
+        <div class="nt-name"><span class="dot" style="background:var(--green)"></span>Острый стресс</div>
+        <div class="nt-desc">Кратковременный (перед экзаменом). Может временно улучшить концентрацию. Мобилизует ресурсы организма.</div>
+      </div>
+      <div class="nt-card" style="border-color:rgba(248,113,113,.3)">
+        <div class="nt-name"><span class="dot" style="background:var(--red)"></span>Хронический стресс</div>
+        <div class="nt-desc">Постоянное давление, принуждение, перегрузка. Кортизол остаётся повышенным. Разрушительные процессы в мозге.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">💀</span> Что делает кортизол с гиппокампом</h3>
+    <p>Гиппокамп — ключевая структура для обучения (формирование воспоминаний, пространственная навигация). Содержит много рецепторов кортизола → особенно уязвим.</p>
+
+    <div class="key-points" style="margin-top:16px">
+      <div class="key-point">
+        <div class="kp-num" style="background:var(--red)">1</div>
+        <div class="kp-text"><strong>Уменьшает объём гиппокампа</strong> — МРТ показывает физическое сокращение у людей с хроническим стрессом</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num" style="background:var(--red)">2</div>
+        <div class="kp-text"><strong>Подавляет нейрогенез</strong> — останавливает образование новых нейронов во взрослом возрасте</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num" style="background:var(--red)">3</div>
+        <div class="kp-text"><strong>Ослабляет пластичность</strong> — снижается долговременная потенциация (LTP), нейроны хуже формируют связи</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num" style="background:var(--red)">4</div>
+        <div class="kp-text"><strong>Нарушает рабочую память</strong> — студенты хуже удерживают информацию «в голове»</div>
+      </div>
+    </div>
+
+    <div class="callout red" style="margin-top:16px">
+      <p><strong>Sapolsky R.M.</strong> (2004). <em>Why Zebras Don't Get Ulcers</em>. | <strong>McEwen B.S.</strong> (2007). <em>Physiological Reviews</em>, 87(3), 873-904. | <strong>Lupien S.J. et al.</strong> (2009). <em>Nature Reviews Neuroscience</em>, 10(6), 434-445.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📈</span> Закон Йеркса-Додсона</h3>
+    <p>Инвертированная U-образная кривая: некоторое давление мотивирует, но избыточное — разрушает.</p>
+    <div class="chart">
+      <div class="chart-title">Зависимость производительности от уровня стресса</div>
+      <div style="display:flex; align-items:flex-end; gap:0">
+        <div class="chart-y-axis">
+          <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+        </div>
+        <div class="chart-area" style="flex:1; align-items:flex-end; padding-bottom:0">
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:20%;background:var(--green);margin:0 auto;max-width:40px"><span class="value">20%</span></div>
+            <div class="chart-label">Низкий</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:55%;background:var(--green);margin:0 auto;max-width:40px"><span class="value">55%</span></div>
+            <div class="chart-label"></div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:90%;background:var(--accent);margin:0 auto;max-width:40px"><span class="value">90%</span></div>
+            <div class="chart-label"><strong>Оптимум</strong></div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:60%;background:var(--yellow);margin:0 auto;max-width:40px"><span class="value">60%</span></div>
+            <div class="chart-label"></div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:25%;background:var(--red);margin:0 auto;max-width:40px"><span class="value">25%</span></div>
+            <div class="chart-label">Высокий</div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:8px; font-size:.82rem; color:var(--text-muted)">Уровень стресса →</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🔁</span> Парадокс принуждения — замкнутый цикл</h3>
+    <div class="cycle">
+      <div class="cycle-step" style="border-color:var(--red)">Заставляют учиться</div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step" style="border-color:var(--red)">Сопротивление → стресс</div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step" style="border-color:var(--red)">Повышение кортизола</div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step" style="border-color:var(--red)">Подавление гиппокампа</div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step" style="border-color:var(--red)">Невозможность учиться</div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step" style="border-color:var(--red)">Больше давления</div>
+      <span class="cycle-arrow">↻</span>
+    </div>
+    <div class="callout red" style="margin-top:16px">
+      <p>Это замкнутый цикл, который <strong>невозможно разорвать увеличением нагрузки</strong>.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🔬</span> Исследования</h3>
+    <div class="research-item">
+      <div class="ri-title">Lupien et al. (2002) — Кортизол у детей</div>
+      <div class="ri-finding">Дети с хронически повышенным кортизолом имели <strong>меньший объём гиппокампа</strong> и <strong>худшие результаты тестов памяти</strong>.</div>
+      <div class="ri-source"><em>Psychoneuroendocrinology</em>, 30(3), 225-242.</div>
+    </div>
+    <div class="research-item">
+      <div class="ri-title">Vogel & Schwabe (2016) — Систематический обзор</div>
+      <div class="ri-finding">Стресс <strong>до</strong> обучения нарушает кодирование информации. Хронический стресс — <strong>всегда негативен</strong> для обучения.</div>
+      <div class="ri-source"><em>Science of Learning</em>, 1, 16011.</div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Резюме:</strong> Кортизол буквально убивает нейроны в гиппокампе и останавливает образование новых. Чем сильнее давление — тем хуже работает мозг. Это не метафора, это доказанный нейробиологический факт.</p>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SECTION: BURNOUT              -->
+<!-- ============================== -->
+<div class="section" id="burnout">
+  <div class="section-header">
+    <span class="section-icon">😵</span>
+    <h2>Выгорание и мотивация</h2>
+    <p>Почему пропадает желание что-либо делать</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📐</span> Три компонента выгорания (Maslach & Jackson, 1981)</h3>
+    <div class="nt-grid">
+      <div class="nt-card" style="border-color:rgba(248,113,113,.3)">
+        <div class="nt-name"><span class="dot" style="background:var(--red)"></span>Эмоциональное истощение</div>
+        <div class="nt-desc">Ощущение опустошённости. «Батарейка разряжена». Нет сил даже на простые вещи. Утром уже устал.</div>
+      </div>
+      <div class="nt-card" style="border-color:rgba(251,191,36,.3)">
+        <div class="nt-name"><span class="dot" style="background:var(--yellow)"></span>Деперсонализация / цинизм</div>
+        <div class="nt-desc">«Зачем мне это?» Отстранённость, безразличие. Ирония и сарказм как защитный механизм.</div>
+      </div>
+      <div class="nt-card" style="border-color:rgba(167,139,250,.3)">
+        <div class="nt-name"><span class="dot" style="background:var(--purple)"></span>Снижение достижений</div>
+        <div class="nt-desc">«Я всё равно не справлюсь». Кажется, что усилия не приносят результата. Потеря уверенности.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🎯</span> Теория самодетерминации (Deci & Ryan, 2000)</h3>
+    <p>Три фундаментальные психологические потребности. Когда все фрустрированы → выгорание:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Потребность</th><th>Что это</th><th>При фрустрации</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color:var(--green)">Автономия</strong></td><td>Контроль над своими действиями</td><td>Бунт, апатия, «я — марионетка»</td></tr>
+          <tr><td><strong style="color:var(--accent)">Компетентность</strong></td><td>Чувство что ты справляешься</td><td>Беспомощность, «никогда не получится»</td></tr>
+          <tr><td><strong style="color:var(--purple)">Связанность</strong></td><td>Связь с другими людьми</td><td>Изоляция, одиночество</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">💪</span> Истощение самоконтроля (Baumeister et al., 1998)</h3>
+    <p>Самоконтроль работает как «мышца» — устаёт при использовании. Каждое решение «заставить себя» расходует ресурс.</p>
+    <div class="callout yellow">
+      <p><strong>Применительно к ситуации «учёба без перерывов»:</strong> весь день расходуется на принуждение себя учиться. К вечеру — ноль ресурса на хобби, спорт, общение. Человек чувствует вину за «безделье», но не может себя заставить.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🎨</span> Почему не остаётся времени на хобби</h3>
+    <div class="key-points">
+      <div class="key-point">
+        <div class="kp-num">1</div>
+        <div class="kp-text"><strong>Overjustification Effect</strong> — внешняя мотивация вытесняет внутреннюю. Учёба = обязанность, мозг перестаёт видеть ценность. <em style="font-size:.82rem;color:var(--text-muted)">Lepper et al. (1973)</em></div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num">2</div>
+        <div class="kp-text"><strong>Гиперфокус на «продуктивности»</strong> — «каждый час должен быть полезным». Отдых = «лень» → чувство вины → стресс.</div>
+      </div>
+      <div class="key-point">
+        <div class="kp-num">3</div>
+        <div class="kp-text"><strong>Дофаминовое истощение</strong> — дофамин нужен для желания что-то делать. При истощении — ангедония. <em style="font-size:.82rem;color:var(--text-muted)">Treadway et al. (2012)</em></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🔬</span> Исследования</h3>
+    <div class="research-item">
+      <div class="ri-title">Schaufeli et al. (2002) — Выгорание у студентов</div>
+      <div class="ri-finding"><strong>30-40% студентов</strong> демонстрировали признаки выгорания. Главные предикторы: перегрузка, отсутствие контроля, недостаток вознаграждения.</div>
+      <div class="ri-source"><em>Journal of Cross-Cultural Psychology</em>, 33(5), 464-481.</div>
+    </div>
+    <div class="research-item">
+      <div class="ri-title">Lin & Huang (2014) — Парадокс давления</div>
+      <div class="ri-finding">Студенты с высоким уровнем выгорания имели <strong>значительно более низкую успеваемость</strong>. Чем больше давления → тем хуже результаты.</div>
+      <div class="ri-source"><em>Learning and Individual Differences</em>, 32, 77-84.</div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Резюме:</strong> Выгорание — не «каприз». Это научно задокументированный синдром. Хобби и отдых — не роскошь, а необходимое условие для эффективного обучения и психического здоровья.</p>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SECTION: PRODUCTIVITY         -->
+<!-- ============================== -->
+<div class="section" id="productivity">
+  <div class="section-header">
+    <span class="section-icon">📉</span>
+    <h2>Парадокс продуктивности</h2>
+    <p>Почему больше ≠ лучше</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📊</span> Кривая эффективности обучения</h3>
+    <div class="chart">
+      <div class="chart-title">Эффективность обучения в зависимости от часов в день</div>
+      <div style="display:flex; align-items:flex-end; gap:0">
+        <div class="chart-y-axis">
+          <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+        </div>
+        <div class="chart-area" style="flex:1; align-items:flex-end; padding-bottom:0">
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:30%;background:var(--green);margin:0 auto;max-width:40px"><span class="value">30%</span></div>
+            <div class="chart-label">1 час</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:65%;background:var(--green);margin:0 auto;max-width:40px"><span class="value">65%</span></div>
+            <div class="chart-label">3 часа</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:92%;background:var(--accent);margin:0 auto;max-width:40px"><span class="value">92%</span></div>
+            <div class="chart-label"><strong>5 часов</strong><br><small style="color:var(--green)">оптимум</small></div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:60%;background:var(--yellow);margin:0 auto;max-width:40px"><span class="value">60%</span></div>
+            <div class="chart-label">7 часов</div>
+          </div>
+          <div class="chart-bar-group">
+            <div class="chart-bar" style="height:30%;background:var(--red);margin:0 auto;max-width:40px"><span class="value">30%</span></div>
+            <div class="chart-label">9+ часов</div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:8px; font-size:.82rem; color:var(--text-muted)">Часы учёбы в день →</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🏭</span> Исследование: рабочие часы и продуктивность</h3>
+    <div class="research-item">
+      <div class="ri-title">Pencavel J. (2014) — Stanford University</div>
+      <div class="ri-finding">Выработка <strong>переставала расти</strong> после 50 часов в неделю. После 55 часов — <strong>резко падала</strong>. 70 часов давали <strong>тот же результат</strong>, что и 55.</div>
+      <div class="ri-source"><em>The Economic Journal</em>, 125(589), 2052-2076.</div>
+    </div>
+    <div class="research-item">
+      <div class="ri-title">Boksem M.A., Tops M. (2008) — Когнитивная усталость</div>
+      <div class="ri-finding">При длительной умственной работе мозг <strong>снижает вложение усилий</strong>. Снижение активности передней поясной коры (зона усилия).</div>
+      <div class="ri-source"><em>Brain Research Reviews</em>, 59(1), 125-139.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📚</span> Массированное vs распределённое обучение</h3>
+    <div class="research-item">
+      <div class="ri-title">Rohrer D., Taylor K. (2007)</div>
+      <div class="ri-finding">Распределённое обучение (spaced practice) <strong>в 2-3 раза эффективнее</strong> массированного (cramming). 4 часа по 1 часу на 4 дня > 4 часа непрерывно.</div>
+      <div class="ri-source"><em>Instructional Science</em>, 35(6), 481-498.</div>
+    </div>
+    <div class="research-item">
+      <div class="ri-title">Cepeda N.J. et al. (2006) — Мета-анализ 184 исследований</div>
+      <div class="ri-finding">Интервальное обучение превосходит массированное в <strong>среднем на 10-30%</strong>. Эффект стабилен для разных типов материала и возрастов.</div>
+      <div class="ri-source"><em>Psychological Bulletin</em>, 132(3), 354-380.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">⚡</span> Перерывы повышают продуктивность</h3>
+    <div class="research-item">
+      <div class="ri-title">Ariga & Lleras (2011)</div>
+      <div class="ri-finding">Участники с <strong>короткими перерывами</strong> сохраняли концентрацию дольше. Без перерывов концентрация неуклонно снижалась.</div>
+      <div class="ri-source"><em>Cognition</em>, 118(3), 439-443.</div>
+    </div>
+    <div class="research-item">
+      <div class="ri-title">Fritz C. et al. (2013)</div>
+      <div class="ri-finding">Оптимальные перерывы — <strong>5-10 минут</strong> каждые <strong>50-90 минут</strong>. Лучше всего: движение, свежий воздух, смена деятельности.</div>
+      <div class="ri-source"><em>Organizational Psychology Review</em>, 3(4), 307-326.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🍅</span> Техника Pomodoro</h3>
+    <div class="callout">
+      <p><strong>Francesco Cirillo (2006):</strong> 25 мин работы → 5 мин отдыха. После 4 циклов — длинный перерыв (15-30 мин). Основана на ультрадианных ритмах мозга (~90 мин цикл). Предотвращает накопление аденозина и даёт микро-периоды для консолидации.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">📋</span> Сравнение подходов</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Параметр</th><th style="color:var(--red)">Массированное (8+ ч)</th><th style="color:var(--green)">Распределённое (2-4 ч)</th></tr></thead>
+        <tbody>
+          <tr><td>Краткосрочное запоминание</td><td>Среднее</td><td>Высокое</td></tr>
+          <tr><td>Долгосрочное запоминание</td><td style="color:var(--red)">Низкое</td><td style="color:var(--green)">Высокое</td></tr>
+          <tr><td>Понимание материала</td><td>Поверхностное</td><td>Глубокое</td></tr>
+          <tr><td>Уровень стресса</td><td style="color:var(--red)">Высокий</td><td style="color:var(--green)">Умеренный</td></tr>
+          <tr><td>Риск выгорания</td><td style="color:var(--red)">Высокий</td><td style="color:var(--green)">Низкий</td></tr>
+          <tr><td>Удовлетворённость</td><td style="color:var(--red)">Низкая</td><td style="color:var(--green)">Высокая</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Резюме:</strong> 10 часов «за столом» дают меньше результата, чем 5 часов с перерывами и последующим отдыхом. Парадокс продуктивности: <strong>чтобы учиться больше, нужно учиться меньше</strong> — но умнее.</p>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SECTION: REST                 -->
+<!-- ============================== -->
+<div class="section" id="rest">
+  <div class="section-header">
+    <span class="section-icon">🌿</span>
+    <h2>Отдых, хобби и восстановление</h2>
+    <p>Научные доказательства пользы отдыха</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🧠</span> Мозг работает когда «отдыхает»</h3>
+    <p>Default Mode Network (DMN) активируется, когда мы не заняты задачей:</p>
+    <ul style="color:var(--text-muted); margin: 8px 0 16px 20px; font-size:.95rem; line-height:2;">
+      <li>Консолидация памяти</li>
+      <li>Планирование будущего</li>
+      <li>Творческое мышление и инсайты</li>
+    </ul>
+    <div class="callout red">
+      <p>Если не давать мозгу времени на DMN-активность, <strong>качество мышления падает</strong>.</p>
+    </div>
+    <p style="font-size:.88rem;color:var(--text-muted);font-style:italic;">Raichle M.E. (2001). <em>PNAS</em>, 98(2), 676-682. | Immordino-Yang et al. (2012). <em>Perspectives on Psychological Science</em>, 7(4), 352-364.</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🏃</span> Физическая активность и мозг</h3>
+    <div class="callout green">
+      <p><strong>Ratey J.J. (2008), «Spark»:</strong> Физическая активность повышает уровень BDNF («удобрение для мозга»), стимулирует нейрогенез в гиппокампе, улучшает кровоснабжение, снижает кортизол, повышает дофамин и серотонин. <strong>Даже 20-30 минут ходьбы</strong> значительно улучшают когнитивные функции.</p>
+    </div>
+    <p style="font-size:.88rem;color:var(--text-muted);font-style:italic;">Hillman C.H. et al. (2008). <em>Nature Reviews Neuroscience</em>, 9(1), 58-65. | Pereira A.C. et al. (2007). <em>PNAS</em>, 104(13), 5638-5643.</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🌲</span> Природа и восстановление</h3>
+    <div class="research-item">
+      <div class="ri-title">Bratman et al. (2015) — Прогулка на природе</div>
+      <div class="ri-finding"><strong>90-минутная прогулка на природе</strong> снизила активность зоны руминации (навязчивых негативных мыслей). Городская прогулка такого эффекта <strong>не дала</strong>.</div>
+      <div class="ri-source"><em>PNAS</em>, 112(28), 8567-8572.</div>
+    </div>
+    <div class="research-item">
+      <div class="ri-title">Berman et al. (2008) — Парк vs город</div>
+      <div class="ri-finding">Прогулка в парке улучшила рабочую память на <strong>20%</strong> по сравнению с прогулкой в городе.</div>
+      <div class="ri-source"><em>Psychological Science</em>, 19(12), 1207-1212.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🎮</span> Хобби и состояние потока (Flow)</h3>
+    <div class="callout">
+      <p><strong>Csikszentmihalyi M. (1990), «Flow»:</strong> Состояние полного погружения в деятельность. Активирует другие зоны мозга, давая отдых «рабочим» областям. Снижает кортизол. Восстанавливает дофаминовую систему. <strong>Хобби — это не «убийство времени», это переключение мозга в режим восстановления.</strong></p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">👥</span> Социальные связи</h3>
+    <div class="callout">
+      <p>Социальная изоляция повышает кортизол. Общение активирует окситоцин, который <strong>противодействует кортизолу</strong>. Даже <strong>10 минут</strong> приятного общения снижают стресс.</p>
+    </div>
+    <p style="font-size:.88rem;color:var(--text-muted);font-style:italic;">Heinrichs M. et al. (2003). <em>Biological Psychiatry</em>, 54(12), 1389-1398. | Cohen S., Wills T.A. (1985). <em>Psychological Bulletin</em>, 98(2), 310-357.</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">🎨</span> Творчество и обучение</h3>
+    <div class="research-item">
+      <div class="ri-title">Sawyer R.K. (2012)</div>
+      <div class="ri-finding">Творческая деятельность развивает дивергентное мышление, которое улучшает решение сложных задач в учёбе. Хобби (музыка, рисование, программирование) тренируют те же когнитивные навыки.</div>
+      <div class="ri-source"><em>Explaining Creativity</em>, Oxford University Press.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="icon">⭐</span> Сравнение видов отдыха</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Вид отдыха</th><th>Восстанавливает</th><th>Эффективность</th></tr></thead>
+        <tbody>
+          <tr><td>Прогулка на природе</td><td>Внимание, снижает стресс</td><td class="stars">★★★★★</td></tr>
+          <tr><td>Физическая активность</td><td>Кровоснабжение, BDNF</td><td class="stars">★★★★★</td></tr>
+          <tr><td>Хобби (flow)</td><td>Дофамин, мотивацию</td><td class="stars">★★★★★</td></tr>
+          <tr><td>Социальное общение</td><td>Окситоцин</td><td class="stars">★★★★☆</td></tr>
+          <tr><td>Сон</td><td>Консолидацию памяти</td><td class="stars">★★★★★</td></tr>
+          <tr><td>Медитация</td><td>Внимание, стресс</td><td class="stars">★★★★☆</td></tr>
+          <tr><td>Скроллинг телефона</td><td>Ничего (истощает)</td><td class="stars">★☆☆☆☆</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Резюме:</strong> Жертвовать отдыхом и хобби ради учёбы — это как жертвовать сном ради работы: в краткосрочной перспективе кажется продуктивным, в долгосрочной — разрушительно.</p>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  🧠 Исследование «Переутомление головного мозга» · На основе 60+ научных источников · 2026
+</footer>
+
+<script>
+  function showSection(id) {
+    // hide all sections
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    // show target
+    document.getElementById(id).classList.add('active');
+    // update nav
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    // find the link that calls this section
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      if (a.getAttribute('onclick').includes("'" + id + "'")) a.classList.add('active');
+    });
+    // close mobile menu
+    document.getElementById('navLinks').classList.remove('open');
+    // scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleMenu() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // close menu on outside click
+  document.addEventListener('click', function(e) {
+    const nav = document.getElementById('navLinks');
+    const btn = document.querySelector('.menu-btn');
+    if (!nav.contains(e.target) && !btn.contains(e.target)) {
+      nav.classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>
